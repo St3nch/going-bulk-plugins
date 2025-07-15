@@ -1,0 +1,27 @@
+name: 📦 Zip & Release Plugins
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-release:
+    name: Create ZIP on Tag
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v3
+
+    - name: 🗜️ Zip plugin folders
+      run: |
+        mkdir release
+        zip -r release/going-bulk-plugins-${{ github.ref_name }}.zip . -x "*.git*" "*node_modules*" "*.DS_Store"
+
+    - name: 🚀 Upload release ZIP
+      uses: softprops/action-gh-release@v1
+      with:
+        files: release/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
